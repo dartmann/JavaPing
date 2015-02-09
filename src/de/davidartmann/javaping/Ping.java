@@ -1,6 +1,8 @@
 package de.davidartmann.javaping;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Ping {
 	
@@ -22,12 +24,23 @@ public class Ping {
             // For Linux and OSX
             cmd = "ping -c 1 " + host;
 	    }
-	    Process myProcess = Runtime.getRuntime().exec(cmd);
+		Process myProcess = Runtime.getRuntime().exec(cmd);
 	    myProcess.waitFor();
-	    if(myProcess.exitValue() == 0) {
-	    	System.out.println(true);
-	    } else {
-	    	System.out.println(false);
-	    }
+    	BufferedReader br = new BufferedReader(new InputStreamReader(myProcess.getInputStream()));
+    	String line = null;
+    	Boolean b = false;
+    	while (true) {
+    		line = br.readLine();
+    		if (line == null) {
+				break;
+			} else {
+				if (line.contains("TTL")) {
+					b = true;
+				}
+			}
+//    		System.out.println("line: "+line);
+    	}
+    	System.out.println("target reachable: "+b);
+    	br.close();
 	}
 }
